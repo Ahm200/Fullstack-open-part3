@@ -1,7 +1,20 @@
 const express = require('express')
+const morgan = require('morgan')
+
+
 const app = express()
 
+
 app.use(express.json())
+
+
+morgan.token("data", (request) => {
+    return request.method === "POST" ? JSON.stringify(request.body) : " ";
+  });
+  
+  app.use(
+    morgan(":method :url :status :res[content-length] - :response-time ms :data")
+  );
 
 let persons = [
     {
@@ -50,27 +63,27 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 
-const generateId = (min=5,max=2000) => {
+const generateId = (min = 5, max = 2000) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-    
-app.post('/api/persons', (req, res) => {
-    const {name,number} = req.body;
+
+app.post('/api/persons', (request, response) => {
+    const { name, number } = request.body;
     if (!name) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'name is missing'
         })
     }
 
     if (!number) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'number is missing'
         })
     }
 
     if (persons.find(p => p.name === name)) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'name must be unique'
         })
     }
@@ -82,7 +95,7 @@ app.post('/api/persons', (req, res) => {
     }
 
     persons = persons.concat(person);
-    res.json(person);
+    response.json(person);
 
 
 
