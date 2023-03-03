@@ -1,12 +1,17 @@
+const { application } = require('express');
 const express = require('express')
 const morgan = require('morgan')
-
+const cors = require('cors');
 
 const app = express()
 
-
+app.use(cors());
 app.use(express.json())
 
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
 
 morgan.token("data", (request) => {
     return request.method === "POST" ? JSON.stringify(request.body) : " ";
@@ -108,7 +113,9 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end();
 })
 
-const PORT = 3002
+app.use(unknownEndpoint)
+
+const PORT = process.env.PORT | 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
