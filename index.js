@@ -9,6 +9,8 @@ app.use(cors());
 app.use(express.json())
 
 
+app.use(express.static('build'))
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
